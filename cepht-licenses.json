@@ -31,7 +31,13 @@
       "type": "standard",
       "expires": "2027-05-01",
       "created": "2026-05-01",
-      "notes": ""
+      "notes": "",
+      "devices": [
+        "bx-monhmck4-y6yscawsr"
+      ],
+      "lastDeviceAt": "2026-05-01T22:31:46.631Z",
+      "browserId": "bx-monhmck4-y6yscawsr",
+      "activatedAt": "2026-05-01T22:31:46.631Z"
     }
   }
 }
