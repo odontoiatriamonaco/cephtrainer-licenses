@@ -55,16 +55,32 @@
   }
 
   // ── REGISTRA DISPOSITIVO via Vercel Function ──────────────────────────────
-  async function registerDevice(key, browserId) {
+  async function registerDevice(key, browserId, attempt) {
+    attempt = attempt || 1;
     try {
       const res = await fetch(REGISTER_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ key, browserId })
       });
-      if (!res.ok) console.warn('[TrainLicense] Registrazione fallita:', res.status);
+      if (res.ok) {
+        console.log('[TrainLicense] Dispositivo registrato correttamente (tentativo ' + attempt + ')');
+      } else {
+        const body = await res.text().catch(function() { return ''; });
+        console.warn('[TrainLicense] Registrazione fallita (' + res.status + '):', body);
+        if (attempt < 3) {
+          await new Promise(function(r) { setTimeout(r, 2000 * attempt); });
+          return registerDevice(key, browserId, attempt + 1);
+        } else {
+          console.warn('[TrainLicense] Registrazione fallita dopo 3 tentativi — il dispositivo non risulterà attivo nel pannello admin finché non si ricarica la pagina tra 24h.');
+        }
+      }
     } catch(e) {
-      console.warn('[TrainLicense] Registrazione offline:', e.message);
+      console.warn('[TrainLicense] Registrazione offline (tentativo ' + attempt + '):', e.message);
+      if (attempt < 3) {
+        await new Promise(function(r) { setTimeout(r, 2000 * attempt); });
+        return registerDevice(key, browserId, attempt + 1);
+      }
     }
   }
 

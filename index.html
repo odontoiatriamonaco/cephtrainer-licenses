@@ -699,7 +699,7 @@ function renderTable() {
         <button class="btn btn-ghost btn-sm" onclick="copyKey('${key}')" title="Copia chiave">📋</button>
         <button class="btn btn-ghost btn-sm" onclick="editLicense('${key}')" title="Modifica">✏️</button>
         <button class="btn btn-amber btn-sm" onclick="extendLicense('${key}')" title="Estendi scadenza">📅</button>
-        ${(devices.length || lic.browserId) ? `<button class="btn btn-ghost btn-sm" onclick="showDevices('${key}')" title="Gestisci PC">🖥</button>` : ''}
+        ${(lic.type !== 'lifetime') ? `<button class="btn btn-ghost btn-sm" onclick="showDevices('${key}')" title="${devices.length || lic.browserId ? 'Gestisci PC' : 'PC: Non attivata'}">🖥</button>` : ''}
         ${lic.active
           ? `<button class="btn btn-danger btn-sm" onclick="toggleLicense('${key}',false)">Disattiva</button>`
           : `<button class="btn btn-success btn-sm" onclick="toggleLicense('${key}',true)">Riattiva</button>`}
@@ -851,9 +851,18 @@ function showDevices(key) {
     }
   } else {
     // Standard / Trial — singolo browserId
-    const bid = lic.browserId;
+    const bid     = lic.browserId || (Array.isArray(lic.devices) && lic.devices[0]);
     if (!bid) {
-      list.innerHTML = '<p style="color:var(--text3);font-size:.85rem">Nessun PC attivato.</p>';
+      list.innerHTML = `
+        <p style="color:var(--amber);font-size:.85rem;margin-bottom:.75rem">⚠️ Nessun PC attivato ancora.</p>
+        <p style="font-size:.75rem;color:var(--text3);line-height:1.6">
+          La chiave non è mai stata registrata correttamente dal dispositivo del cliente.<br><br>
+          <strong style="color:var(--text2)">Cosa fare:</strong><br>
+          1. Controlla i <em>Logs</em> della funzione <code>register-device</code> su Vercel.<br>
+          2. Verifica che la variabile d'ambiente <code>GITHUB_TOKEN</code> sia valida e aggiornata.<br>
+          3. Chiedi al cliente di aprire la console del browser (F12) e cercare messaggi <code>[TrainLicense]</code>.<br>
+          4. In alternativa chiedi al cliente di cancellare i dati della pagina e reinserire la chiave.
+        </p>`;
     } else {
       list.innerHTML = `
         <div class="device-item">

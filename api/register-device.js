@@ -61,7 +61,8 @@ export default async function handler(req, res) {
 
     // 2. Controlla se già registrato
     const devices    = Array.isArray(lic.devices) ? lic.devices : [];
-    const maxDevices = lic.maxDevices || (lic.type === 'pro' ? 3 : lic.type === 'group' ? 10 : 1);
+    const maxDevices = lic.type === 'lifetime' ? Infinity :
+      (lic.maxDevices || (lic.type === 'pro' ? 3 : lic.type === 'group' ? 10 : 1));
 
     if (devices.includes(browserId)) {
       // Già registrato — aggiorna solo lastDeviceAt
