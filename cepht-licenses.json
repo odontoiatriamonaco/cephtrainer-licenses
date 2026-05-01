@@ -1,0 +1,27 @@
+{
+  "_info": "CephTrainer — Registro Licenze. Modificare solo tramite il License Manager.",
+  "_updated": "2026-04-17",
+  "_version": "1.0",
+  "licenses": {
+    "TRAIN-DEMO-0000-0000": {
+      "studio": "Studio Demo",
+      "owner": "Demo User",
+      "email": "",
+      "active": true,
+      "type": "trial",
+      "expires": "2027-12-31",
+      "created": "2026-04-17",
+      "notes": "Licenza demo — non distribuire"
+    },
+    "TRAIN-MONA-XXXX-0001": {
+      "studio": "Studio Monaco",
+      "owner": "Monaco Maurizio",
+      "email": "odontoiatria.monaco@gmail.com",
+      "active": true,
+      "type": "lifetime",
+      "expires": null,
+      "created": "2026-04-17",
+      "notes": "Licenza sviluppatore"
+    }
+  }
+}
