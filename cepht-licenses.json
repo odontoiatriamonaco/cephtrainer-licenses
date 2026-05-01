@@ -47,7 +47,13 @@
       "type": "standard",
       "expires": "2027-05-01",
       "created": "2026-05-01",
-      "notes": ""
+      "notes": "",
+      "devices": [
+        "bx-monhupv5-n0li4u06x"
+      ],
+      "lastDeviceAt": "2026-05-01T22:58:42.652Z",
+      "browserId": "bx-monhupv5-n0li4u06x",
+      "activatedAt": "2026-05-01T22:58:42.652Z"
     }
   }
 }
