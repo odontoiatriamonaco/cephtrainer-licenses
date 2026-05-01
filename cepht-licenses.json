@@ -1,6 +1,6 @@
 {
-  "_info": "CephTrainer — Registro Licenze. Modificare solo tramite il License Manager.",
-  "_updated": "2026-04-17",
+  "_info": "CephTrainer â Registro Licenze. Modificare solo tramite il License Manager.",
+  "_updated": "2026-05-01",
   "_version": "1.0",
   "licenses": {
     "TRAIN-DEMO-0000-0000": {
@@ -11,7 +11,7 @@
       "type": "trial",
       "expires": "2027-12-31",
       "created": "2026-04-17",
-      "notes": "Licenza demo — non distribuire"
+      "notes": "Licenza demo â non distribuire"
     },
     "TRAIN-MONA-XXXX-0001": {
       "studio": "Studio Monaco",
@@ -22,6 +22,16 @@
       "expires": null,
       "created": "2026-04-17",
       "notes": "Licenza sviluppatore"
+    },
+    "TRAIN-9TBZ-MLJK-7ZF2": {
+      "studio": "TEST",
+      "owner": "TEST",
+      "email": "",
+      "active": true,
+      "type": "standard",
+      "expires": "2027-05-01",
+      "created": "2026-05-01",
+      "notes": ""
     }
   }
 }
