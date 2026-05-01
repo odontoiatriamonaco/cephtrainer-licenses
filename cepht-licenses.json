@@ -38,6 +38,16 @@
       "lastDeviceAt": "2026-05-01T22:31:46.631Z",
       "browserId": "bx-monhmck4-y6yscawsr",
       "activatedAt": "2026-05-01T22:31:46.631Z"
+    },
+    "TRAIN-5F27-W293-F4HE": {
+      "studio": "PROVA",
+      "owner": "PROVA",
+      "email": "",
+      "active": true,
+      "type": "standard",
+      "expires": "2027-05-01",
+      "created": "2026-05-01",
+      "notes": ""
     }
   }
 }
