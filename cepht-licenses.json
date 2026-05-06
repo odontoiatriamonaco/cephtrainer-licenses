@@ -78,6 +78,18 @@
       "notes": "",
       "maxDevices": 40,
       "devices": []
+    },
+    "TRAIN-T35E-W6HF-NCHT": {
+      "studio": "Marzio Salerno",
+      "owner": "Marzio ( collega di Martina)",
+      "email": "",
+      "active": true,
+      "type": "pro",
+      "expires": "2027-05-06",
+      "created": "2026-05-06",
+      "notes": "",
+      "maxDevices": 3,
+      "devices": []
     }
   }
 }
