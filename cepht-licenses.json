@@ -100,6 +100,16 @@
       "expires": "2027-05-09",
       "created": "2026-05-09",
       "notes": ""
+    },
+    "TRAIN-37MM-HTDD-29S8": {
+      "studio": "Prova",
+      "owner": "Prova",
+      "email": "",
+      "active": true,
+      "type": "standard",
+      "expires": "2027-05-09",
+      "created": "2026-05-09",
+      "notes": ""
     }
   }
 }
