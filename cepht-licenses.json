@@ -1,6 +1,6 @@
 {
-  "_info": "CephTrainer ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Registro Licenze. Modificare solo tramite il License Manager.",
-  "_updated": "2026-05-06",
+  "_info": "CephTrainer ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Registro Licenze. Modificare solo tramite il License Manager.",
+  "_updated": "2026-05-09",
   "_version": "1.0",
   "licenses": {
     "TRAIN-DEMO-0000-0000": {
@@ -11,7 +11,7 @@
       "type": "trial",
       "expires": "2027-12-31",
       "created": "2026-04-17",
-      "notes": "Licenza demo ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ non distribuire"
+      "notes": "Licenza demo ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ non distribuire"
     },
     "TRAIN-MONA-XXXX-0001": {
       "studio": "Studio Monaco",
@@ -68,7 +68,7 @@
       "devices": []
     },
     "TRAIN-BCG6-2KFX-WPTC": {
-      "studio": "Università Salerno Studenti",
+      "studio": "UniversitÃ  Salerno Studenti",
       "owner": "Stefano Martina",
       "email": "",
       "active": true,
@@ -90,6 +90,16 @@
       "notes": "",
       "maxDevices": 3,
       "devices": []
+    },
+    "TRAIN-SV2L-DZR8-5Q5Z": {
+      "studio": "Test",
+      "owner": "Maurizio",
+      "email": "",
+      "active": true,
+      "type": "standard",
+      "expires": "2027-05-09",
+      "created": "2026-05-09",
+      "notes": ""
     }
   }
 }
