@@ -139,7 +139,8 @@
       };
 
     } catch (err) {
-      // OFFLINE: usa cache locale
+      console.warn('[TrainLicense] Errore fetch licenze:', err && err.message);
+      // OFFLINE: usa cache locale SOLO se la chiave coincide
       const cached = safeJSON(localStorage.getItem(LS_CACHE));
       if (cached && cached.key === key) {
         const age = Date.now() - (cached.checkedAt || 0);
@@ -147,8 +148,11 @@
           console.log('[TrainLicense] Offline — cache di ' + Math.round(age / 86400000) + 'gg fa');
           return { valid: true, lic: cached.lic, offline: true };
         }
+        // stessa chiave, ma cache > 7 giorni
+        return { valid: false, reason: 'Sei offline e l\'ultima verifica risale a oltre 7 giorni fa.\nConnettiti a internet per riconvalidare la licenza.' };
       }
-      return { valid: false, reason: 'Impossibile verificare la licenza (offline da >7 giorni)' };
+      // Nessuna cache, oppure cache per una chiave diversa → serve la rete per la prima verifica
+      return { valid: false, reason: 'Impossibile contattare il server licenze.\nVerifica la connessione internet (Wi-Fi/dati) e riprova.\nSe il problema persiste, contatta lo studio.' };
     }
   }
 
@@ -175,8 +179,24 @@
           Non hai una chiave? Contatta lo studio.<br>
           <a href="mailto:odontoiatria.monaco@gmail.com?subject=Richiesta%20licenza%20CephTrainer" style="color:${ACCENT};text-decoration:none">odontoiatria.monaco@gmail.com</a>
         </p>
+        <p style="color:#1e293b;font-size:.65rem;margin-top:.75rem;line-height:1.4">
+          <a id="train-lic-reset" href="#" style="color:#475569;text-decoration:underline">Cancella dati locali e riprova</a>
+        </p>
       </div>`;
     document.body.appendChild(overlay);
+
+    const resetLink = document.getElementById('train-lic-reset');
+    if (resetLink) {
+      resetLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        try {
+          localStorage.removeItem(LS_KEY);
+          localStorage.removeItem(LS_CACHE);
+          localStorage.removeItem(LS_BROWSER);
+        } catch(_) {}
+        location.reload();
+      });
+    }
 
     const input  = document.getElementById('train-lic-input');
     const btn    = document.getElementById('train-lic-btn');
