@@ -22,7 +22,8 @@
   const LS_KEY       = 'train_license_key';
   const LS_CACHE     = 'train_license_cache';
   const LS_BROWSER   = 'train_browser_id';
-  const CHECK_EVERY  = 24 * 60 * 60 * 1000; // 24h
+  const CHECK_EVERY  = 24 * 60 * 60 * 1000; // 24h tra ricontrolli online
+  const OFFLINE_GRACE_MS = 30 * 24 * 60 * 60 * 1000; // 30 giorni di accesso offline su cache
 
   const ACCENT  = '#fbbf24'; // ambra (coerente con badge-quiz)
   const ACCENT2 = '#f59e0b';
@@ -143,16 +144,33 @@
       // OFFLINE: usa cache locale SOLO se la chiave coincide
       const cached = safeJSON(localStorage.getItem(LS_CACHE));
       if (cached && cached.key === key) {
-        const age = Date.now() - (cached.checkedAt || 0);
-        if (age < 7 * 24 * 60 * 60 * 1000) {
-          console.log('[TrainLicense] Offline — cache di ' + Math.round(age / 86400000) + 'gg fa');
-          return { valid: true, lic: cached.lic, offline: true };
+        // 1. Se la licenza in cache è già genuinamente scaduta, blocco anche offline
+        if (cached.lic && cached.lic.expires) {
+          const exp = new Date(cached.lic.expires); exp.setHours(23, 59, 59);
+          if (exp < new Date()) {
+            return {
+              valid: false, expired: true,
+              reason: 'Licenza scaduta il ' + cached.lic.expires + ' — contatta lo studio per il rinnovo'
+            };
+          }
         }
-        // stessa chiave, ma cache > 7 giorni
-        return { valid: false, reason: 'Sei offline e l\'ultima verifica risale a oltre 7 giorni fa.\nConnettiti a internet per riconvalidare la licenza.' };
+        const age = Date.now() - (cached.checkedAt || 0);
+        // 2. Entro la grace offline → accesso concesso
+        if (age < OFFLINE_GRACE_MS) {
+          console.log('[TrainLicense] Offline — cache di ' + Math.round(age / 86400000) + 'gg fa');
+          return { valid: true, lic: cached.lic, offline: true, offlineDays: Math.round(age / 86400000) };
+        }
+        // 3. Cache stessa chiave, ma >30 giorni: riconvalida richiesta (NON wipe la chiave)
+        return {
+          valid: false, networkError: true,
+          reason: 'È passato troppo tempo dall\'ultima verifica online (' + Math.round(age / 86400000) + ' giorni).\nConnettiti a internet e premi Riprova per riconvalidare la licenza.'
+        };
       }
-      // Nessuna cache, oppure cache per una chiave diversa → serve la rete per la prima verifica
-      return { valid: false, reason: 'Impossibile contattare il server licenze.\nVerifica la connessione internet (Wi-Fi/dati) e riprova.\nSe il problema persiste, contatta lo studio.' };
+      // Nessuna cache, o cache per una chiave diversa → serve la rete per la prima verifica
+      return {
+        valid: false, networkError: true,
+        reason: 'Impossibile contattare il server licenze.\nVerifica la connessione internet (Wi-Fi/dati) e riprova.\nSe il problema persiste, contatta lo studio.'
+      };
     }
   }
 
@@ -241,6 +259,70 @@
     setTimeout(() => input.focus(), 100);
   }
 
+  // ── MODAL RICONVALIDA RICHIESTA (errore di rete, chiave NON wipeata) ──────
+  function showNetworkErrorModal(savedKey, reason) {
+    const overlay = document.createElement('div');
+    overlay.id = 'train-network-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#0a0e1a;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Outfit,system-ui,sans-serif;';
+    overlay.innerHTML = `
+      <div style="background:#0f172a;border:1px solid rgba(251,191,36,.3);border-radius:16px;padding:2.5rem;width:440px;max-width:92vw;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📶</div>
+        <h2 style="color:#fbbf24;font-size:1.2rem;font-weight:700;margin-bottom:.5rem">Riconvalida richiesta</h2>
+        <p style="color:#94a3b8;font-size:.85rem;margin-bottom:1.25rem;line-height:1.6;white-space:pre-line">${reason}</p>
+        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:.6rem .9rem;margin-bottom:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:#cbd5e1;letter-spacing:.05em">
+          ${savedKey}
+        </div>
+        <button id="train-net-retry"
+          style="width:100%;padding:.75rem;background:${ACCENT};border:none;border-radius:8px;color:#1f2937;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:.75rem;">
+          🔄 Riprova
+        </button>
+        <p style="color:#475569;font-size:.72rem;margin-top:.75rem;line-height:1.5">
+          La tua chiave è ancora memorizzata.<br>
+          Connettiti a internet e premi Riprova.
+        </p>
+        <p style="color:#1e293b;font-size:.65rem;margin-top:1rem;line-height:1.4">
+          <a id="train-net-reset" href="#" style="color:#475569;text-decoration:underline">Cancella e inserisci una nuova chiave</a>
+        </p>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    document.getElementById('train-net-retry').addEventListener('click', async function() {
+      this.textContent = '⏳ Verifica…'; this.disabled = true;
+      const result = await validateLicense(savedKey);
+      if (result.valid) {
+        overlay.style.cssText += 'opacity:0;transition:opacity .4s;';
+        setTimeout(() => overlay.remove(), 400);
+        showActivationBanner(result);
+      } else if (result.expired) {
+        overlay.remove();
+        localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(LS_CACHE);
+        showExpiredModal(result.reason);
+      } else if (result.networkError) {
+        // ancora offline: aggiorna messaggio, lascia il modal
+        const msg = overlay.querySelector('p');
+        if (msg) msg.textContent = result.reason;
+        this.textContent = '🔄 Riprova'; this.disabled = false;
+      } else {
+        // Server raggiungibile ma chiave invalida (es. disattivata)
+        overlay.remove();
+        localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(LS_CACHE);
+        buildModal();
+      }
+    });
+
+    document.getElementById('train-net-reset').addEventListener('click', function(e) {
+      e.preventDefault();
+      try {
+        localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(LS_CACHE);
+        localStorage.removeItem(LS_BROWSER);
+      } catch(_) {}
+      location.reload();
+    });
+  }
+
   // ── MODAL LICENZA SCADUTA ─────────────────────────────────────────────────
   function showExpiredModal(reason) {
     const overlay = document.createElement('div');
@@ -307,15 +389,35 @@
     if ((Date.now() - lastCheck) > CHECK_EVERY) {
       const result = await validateLicense(savedKey);
       if (!result.valid) {
+        if (result.networkError) {
+          // Errore di rete → non rimuovere la chiave, mostra modal di riconvalida
+          showNetworkErrorModal(savedKey, result.reason);
+          return;
+        }
+        // Genuinamente scaduta o disattivata → wipe e modal apposito
         localStorage.removeItem(LS_KEY);
         localStorage.removeItem(LS_CACHE);
         result.expired ? showExpiredModal(result.reason) : buildModal();
         return;
       }
+      if (result.offline && result.offlineDays > 7) {
+        // Banner info: stiamo usando la cache da diversi giorni
+        showOfflineBanner(result.offlineDays);
+      }
       if (result.lic && result.lic.expires) showExpiryWarning(result.lic);
     } else if (cached && cached.lic && cached.lic.expires) {
       showExpiryWarning(cached.lic);
     }
+  }
+
+  // Banner non bloccante per modalità offline prolungata
+  function showOfflineBanner(days) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(100,116,139,.92);color:#fff;text-align:center;padding:.5rem;font-size:.78rem;font-family:Outfit,system-ui,sans-serif;z-index:9998;cursor:pointer;';
+    banner.innerHTML = '📶 Modalità offline — ultima verifica licenza ' + days + ' giorni fa. Connettiti per aggiornare. <span style="opacity:.6">✕</span>';
+    banner.onclick = () => banner.remove();
+    document.body.appendChild(banner);
+    setTimeout(() => { try { banner.remove(); } catch(_){} }, 8000);
   }
 
   init();
