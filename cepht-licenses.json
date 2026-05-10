@@ -1,6 +1,6 @@
 {
   "_info": "CephTrainer ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Registro Licenze. Modificare solo tramite il License Manager.",
-  "_updated": "2026-05-09",
+  "_updated": "2026-05-10",
   "_version": "1.0",
   "licenses": {
     "TRAIN-DEMO-0000-0000": {
@@ -109,7 +109,13 @@
       "type": "standard",
       "expires": "2027-05-09",
       "created": "2026-05-09",
-      "notes": ""
+      "notes": "",
+      "devices": [
+        "bx-mozj32rt-cihhmzu36"
+      ],
+      "lastDeviceAt": "2026-05-10T08:46:00.065Z",
+      "browserId": "bx-mozj32rt-cihhmzu36",
+      "activatedAt": "2026-05-10T08:46:00.065Z"
     }
   }
 }
