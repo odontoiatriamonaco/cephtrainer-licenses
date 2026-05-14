@@ -1,6 +1,6 @@
 {
   "_info": "CephTrainer ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Registro Licenze. Modificare solo tramite il License Manager.",
-  "_updated": "2026-05-10",
+  "_updated": "2026-05-14",
   "_version": "1.0",
   "licenses": {
     "TRAIN-DEMO-0000-0000": {
@@ -78,9 +78,10 @@
       "notes": "",
       "maxDevices": 40,
       "devices": [
-        "bx-mozja6ho-3obziow10"
+        "bx-mozja6ho-3obziow10",
+        "bx-mp5alhga-d18q7h1zl"
       ],
-      "lastDeviceAt": "2026-05-10T08:51:31.255Z"
+      "lastDeviceAt": "2026-05-14T09:34:59.281Z"
     },
     "TRAIN-T35E-W6HF-NCHT": {
       "studio": "Marzio Salerno",
