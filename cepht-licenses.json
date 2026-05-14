@@ -79,9 +79,10 @@
       "maxDevices": 40,
       "devices": [
         "bx-mozja6ho-3obziow10",
-        "bx-mp5alhga-d18q7h1zl"
+        "bx-mp5alhga-d18q7h1zl",
+        "bx-mp5alr1f-9aokge3m5"
       ],
-      "lastDeviceAt": "2026-05-14T09:34:59.281Z"
+      "lastDeviceAt": "2026-05-14T09:35:12.929Z"
     },
     "TRAIN-T35E-W6HF-NCHT": {
       "studio": "Marzio Salerno",
